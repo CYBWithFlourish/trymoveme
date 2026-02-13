@@ -17,6 +17,40 @@ TryMoveMe is a browser-first security training platform for the Sui blockchain a
 - Disposable Attack Box: A per-user Docker container runs a local Sui node; the browser terminal/IDE proxies commands into it.
 - On-chain Rewards: Successful completions mint SBT `ProofOfHack` objects into a user kiosk (placed+locked via `sui::kiosk`), plus a wallet-level `ProofReceipt` SBT for inventory visibility.
 
+## Master Plan (product snapshot)
+
+- Vision: First gamified, browser-based offensive security sandbox for Sui Move. Object-centric vuln focus (capability theft, hot potato, ID leakage) vs. EVM-style reentrancy/math.
+- Zero setup: Labs run in Docker “attack boxes” started from the browser; no local Rust/Sui install required.
+- SEAL resume: Exploit code stored on Walrus; on success, backend mints `ProofOfHack` SBT + wallet `ProofReceipt`, creating an auditable on-chain portfolio.
+
+### User journey
+
+1) Login (zkLogin/Sui Wallet)
+2) Mint `CadetPass` to unlock rooms
+3) Select room (e.g., Hot Potato)
+4) Backend spins a private Docker localnet; frontend shows Monaco + terminal
+5) User codes exploit → Execute → backend runs against localnet
+6) On success: upload code to Walrus → `seal_victory` mints ProofOfHack + receipt
+
+### Architecture highlights
+
+- Frontend: Next.js + Monaco + xterm.js; @mysten/dapp-kit for wallet/CadetPass reads.
+- Backend (NestJS): DockerService manages containers/keys; OracleService uploads to Walrus and signs `seal_victory`.
+- Docker: base image with Sui, Walrus CLI, auto-funded runtime key; room images inherit and embed vulnerable Move sources.
+- Contracts: `core` (CadetPass, ProofOfHack, OracleCap, seal_victory), `kiosk` (Sui standard), `badge` SBTs.
+
+### MVP scope (Sprint 1)
+
+- Room 0: publish hello-world package (validate Docker/terminal/funding).
+- Room 1: Hot Potato non-drop puzzle (validate verifier, Walrus upload, proof minting).
+
+### Immediate next steps
+
+- Build `trymoveme-base` with funded runtime wallet entrypoint.
+- Publish `trymoveme::core` to testnet; record `PACKAGE_ID`, `OracleCapID`.
+- Backend: set `.env` with admin mnemonic; ensure kiosk + owner cap passed into `seal_victory`; inject user keys into containers.
+- Frontend: wire Run → `/lab/submit`; stream output; surface kiosk/proof state.
+
 ## SEAL Protocol (proof flow)
 
 - Execute: User attack code runs inside an isolated Docker localnet; backend evaluates success conditions (e.g., object ownership change).
