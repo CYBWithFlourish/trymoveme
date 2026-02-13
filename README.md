@@ -1,7 +1,7 @@
 # TryMoveMe: Gamified Move Security Labs
 
 ### "HackTheObject. SecureTheMove::SealTheProof"
-TryMoveMe is a browser-first security training platform for the Sui blockchain and Move language. It aims to replicate the TryHackMe-style experience—zero-install, room-based, hands-on labs tailored to Sui's object-centric model.
+TryMoveMe is a browser-first security training platform for the Sui blockchain and Move language. It aims to replicate the TryHackMe-style experience zero-install, room-based, hands-on labs tailored to Sui's object-centric model.
 
 ## Repository at a Glance
 
