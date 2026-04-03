@@ -44,7 +44,7 @@ export class OracleService {
   }
 
   // Mint the Proof on Sui
-  async mintProof(userAddr: string, roomId: string, blobId: string) {
+  async mintProof(userAddr: string, roomId: string, blobId: string, kioskId: string, kioskOwnerCapId: string) {
     if (!this.keypair) throw new Error("Admin wallet not configured");
 
     const tx = new TransactionBlock();
@@ -52,6 +52,8 @@ export class OracleService {
       target: `${this.packageId}::core::seal_victory`,
       arguments: [
         tx.object(this.oracleCap!), // The capability
+        tx.object(kioskId),         // The user's Kiosk ID
+        tx.object(kioskOwnerCapId), // The Kiosk Owner Cap ID
         tx.pure(userAddr),          // The winner
         tx.pure(roomId),            // The room ID
         tx.pure(blobId)             // The Walrus ID
